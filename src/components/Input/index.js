@@ -12,9 +12,9 @@ export default function Input({
     <StyledView>
       <StyledText>{name}</StyledText>
       <StyledInput
-        type={type}
         name={name}
         onChangeText={e => handleChange(e)}
+        secureTextEntry={type === 'password'}
       />
     </StyledView>
   );

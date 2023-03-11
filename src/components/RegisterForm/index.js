@@ -4,10 +4,9 @@ import Input from '../Input';
 import Button from '../Button';
 import Spacing from '../Spacing';
 import ErrorText from '../ErrorText';
-import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
+import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
 import firebase from '../../config/firebase';
-
-export default function LoginForm({onSuccessSubmit}) {
+export default function RegisterForm({onSuccessSubmit}) {
   const [user, setUser] = useState({
     username: '',
     password: '',
@@ -15,10 +14,10 @@ export default function LoginForm({onSuccessSubmit}) {
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  const submitLogin = async () => {
-    const auth = getAuth(firebase);
+  const submitRegistration = async () => {
     try {
-      await signInWithEmailAndPassword(
+      const auth = getAuth(firebase);
+      await createUserWithEmailAndPassword(
         auth,
         `${user.username}@gmail.com`,
         user.password,
@@ -48,17 +47,17 @@ export default function LoginForm({onSuccessSubmit}) {
       {submitted && user.password.length < 8 && (
         <ErrorText>Mot de passe trop court</ErrorText>
       )}
-      {error !== '' && <ErrorText>{error}</ErrorText>}
       <Spacing />
+      {error ? <ErrorText>{error}</ErrorText> : null}
       <Button
         width={150}
         onPress={() => {
           setSubmitted(true);
           if (user.username.length >= 3 && user.password.length >= 8) {
-            submitLogin();
+            submitRegistration();
           }
         }}
-        title={'Se connecter'}
+        title={"S'inscrire"}
         bgColor={'black'}
       />
     </StyledInputForm>
