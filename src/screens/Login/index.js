@@ -11,13 +11,13 @@ import RegisterForm from '../../components/RegisterForm';
 export default function Login({navigation}) {
   const [currentForm, setCurrentForm] = useState('login');
   const handleLogin = async userCredential => {
-    const idToken = await userCredential.user.getIdToken();
-    AsyncStorage.setItem('token', idToken);
-    AsyncStorage.getItem('token').then(storedToken => {
-      if (storedToken) {
-        navigation.navigate('Home');
-      }
-    });
+    // const idToken = await userCredential.user.getIdToken();
+    // AsyncStorage.setItem('token', idToken);
+    // AsyncStorage.getItem('token').then(storedToken => {
+    //   if (storedToken) {
+    navigation.navigate('Home');
+    //   }
+    // });
   };
 
   const handleRegister = async userCredential => {

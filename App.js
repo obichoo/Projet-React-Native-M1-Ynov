@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import Home from './src/screens/Home';
 import Login from './src/screens/Login';
 import {ThemeProvider} from 'styled-components';
@@ -6,14 +6,20 @@ import theme from './src/config/theme';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import styled from 'styled-components';
+import CreateNote from './src/screens/CreateNote';
 
 export default function App() {
-  const [user, setUser] = useState(null);
-
   return (
     <ThemeProvider theme={theme}>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen options={globalScreenOptions} name="Home">
+            {props => (
+              <Container>
+                <Home {...props} title={'Mes notes'} />
+              </Container>
+            )}
+          </Stack.Screen>
           <Stack.Screen options={globalScreenOptions} name="Login">
             {props => (
               <Container>
@@ -21,10 +27,10 @@ export default function App() {
               </Container>
             )}
           </Stack.Screen>
-          <Stack.Screen options={globalScreenOptions} name="Home">
+          <Stack.Screen options={globalScreenOptions} name="CreateNote">
             {props => (
               <Container>
-                <Home {...props} title={'Mes notes'} />
+                <CreateNote {...props} />
               </Container>
             )}
           </Stack.Screen>

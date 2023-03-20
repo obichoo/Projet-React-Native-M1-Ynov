@@ -15,16 +15,22 @@ export default function LoginForm({onSuccessSubmit}) {
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
+  const errorsLabels = {
+    'auth/user-not-found': 'Utilisateur non trouvé',
+    'auth/wrong-password': 'Mot de passe incorrect',
+  };
+
   const submitLogin = async () => {
     const auth = getAuth(firebase);
     try {
-      await signInWithEmailAndPassword(
-        auth,
-        `${user.username}@gmail.com`,
-        user.password,
-      ).then(userCredential => onSuccessSubmit(userCredential));
+      onSuccessSubmit()
+      // await signInWithEmailAndPassword(
+      //   auth,
+      //   `${user.username}@gmail.com`,
+      //   user.password,
+      // ).then(userCredential => onSuccessSubmit(userCredential));
     } catch (responseError) {
-      setError(responseError.message);
+      setError(errorsLabels[responseError.code]);
     }
   };
 
@@ -36,7 +42,7 @@ export default function LoginForm({onSuccessSubmit}) {
         onChange={e => setUser({...user, username: e})}
       />
       {submitted && user.username.length < 3 && (
-        <ErrorText>Nom d'utilisateur trop court</ErrorText>
+        <ErrorText width={150}>Nom d'utilisateur trop court</ErrorText>
       )}
       <Spacing size={8} />
       <Input
@@ -46,9 +52,9 @@ export default function LoginForm({onSuccessSubmit}) {
         onChange={e => setUser({...user, password: e})}
       />
       {submitted && user.password.length < 8 && (
-        <ErrorText>Mot de passe trop court</ErrorText>
+        <ErrorText width={150}>Mot de passe trop court</ErrorText>
       )}
-      {error !== '' && <ErrorText>{error}</ErrorText>}
+      {error !== '' && <ErrorText width={150}>{error}</ErrorText>}
       <Spacing />
       <Button
         width={150}

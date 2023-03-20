@@ -14,6 +14,10 @@ export default function RegisterForm({onSuccessSubmit}) {
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
+  const errorsLabels = {
+    'auth/email-already-in-use': 'Email déjà utilisé',
+  };
+
   const submitRegistration = async () => {
     try {
       const auth = getAuth(firebase);
@@ -23,7 +27,8 @@ export default function RegisterForm({onSuccessSubmit}) {
         user.password,
       ).then(userCredential => onSuccessSubmit(userCredential));
     } catch (responseError) {
-      setError(responseError.message);
+      console.log(responseError.code);
+      setError(errorsLabels[responseError.code]);
     }
   };
 
@@ -35,7 +40,7 @@ export default function RegisterForm({onSuccessSubmit}) {
         onChange={e => setUser({...user, username: e})}
       />
       {submitted && user.username.length < 3 && (
-        <ErrorText>Nom d'utilisateur trop court</ErrorText>
+        <ErrorText width={150}>Nom d'utilisateur trop court</ErrorText>
       )}
       <Spacing size={8} />
       <Input
@@ -45,10 +50,10 @@ export default function RegisterForm({onSuccessSubmit}) {
         onChange={e => setUser({...user, password: e})}
       />
       {submitted && user.password.length < 8 && (
-        <ErrorText>Mot de passe trop court</ErrorText>
+        <ErrorText width={150}>Mot de passe trop court</ErrorText>
       )}
+      {error ? <ErrorText width={150}>{error}</ErrorText> : null}
       <Spacing />
-      {error ? <ErrorText>{error}</ErrorText> : null}
       <Button
         width={150}
         onPress={() => {
