@@ -1,13 +1,12 @@
 import {initializeApp} from 'firebase/app';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyBx0jCQfYOFmsWlkrkq1aTY00CRcSG6EXk',
-  authDomain: 'notes-app-3661c.firebaseapp.com',
-  projectId: 'notes-app-3661c',
-  storageBucket: 'notes-app-3661c.appspot.com',
-  messagingSenderId: '890173480010',
-  appId: '1:890173480010:web:80fe01e58203fe193c5ab3',
-  measurementId: 'G-9JY3ETJ9T4',
+  apiKey: 'AIzaSyCfmsQnUSKssvd2PdTqX6Xqw2gNGYld_V8',
+  authDomain: 'notes-app-638d6.firebaseapp.com',
+  projectId: 'notes-app-638d6',
+  storageBucket: 'notes-app-638d6.appspot.com',
+  messagingSenderId: '571363894759',
+  appId: '1:571363894759:web:5f5c8aaaa5b8d08c500942',
 };
 
 const firebase = initializeApp(firebaseConfig);

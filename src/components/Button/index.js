@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export default function Button({
+export default function CustomButton({
   bgColor = 'black',
   title = 'Bouton',
   onPress,

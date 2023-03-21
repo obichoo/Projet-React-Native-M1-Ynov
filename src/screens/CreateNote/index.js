@@ -1,53 +1,37 @@
-import React, {useState, useEffect} from 'react';
-import Title from '../../components/Title';
+import React, {useState} from 'react';
 import Button from '../../components/Button';
-import createNote from '../../services/notesService';
-import styled from 'styled-components';
-import {getAuth, onAuthStateChanged} from 'firebase/auth';
-import firebase from '../../config/firebase';
+import {
+  createNote,
+  getCurrentUser,
+  getCurrentUserNotes,
+} from '../../services/notesService';
 import Input from '../../components/Input';
+import Spacing from '../../components/Spacing';
+import BackButton from '../../components/BackButton';
 
 export default function CreateNote() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(getCurrentUser());
 
   const handleSaveNote = async () => {
-    try {
-      await createNote(title, content, currentUser.uid);
-    } catch (error) {
-      console.log(error);
-    }
+    await createNote(title, content, currentUser.uid);
   };
-
-  useEffect(() => {
-    const auth = getAuth(firebase);
-
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      setCurrentUser(user);
-    });
-
-    return unsubscribe;
-  }, []);
 
   return (
     <>
-      <Title>Créer une note</Title>
-      <Input name="Titre" value={title} onChange={setTitle} />
+      <BackButton>Revenir à la liste des notes</BackButton>
+      <Spacing size={16} />
+      <Input width="100%" name="Titre" value={title} onChange={setTitle} />
       <Input
+        width="100%"
         name="Contenu"
         value={content}
         onChange={setContent}
         multiline={true}
       />
+      <Spacing size={16} />
       <Button title="Save" onPress={handleSaveNote} />
     </>
   );
 }
-
-const StyledTextInput = styled.TextInput`
-  background-color: #fff;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-`;

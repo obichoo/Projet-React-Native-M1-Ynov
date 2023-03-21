@@ -5,12 +5,12 @@ import Button from '../Button';
 import Spacing from '../Spacing';
 import ErrorText from '../ErrorText';
 import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
-import firebase from '../../config/firebase';
+import {firebase} from '../../config/firebase';
 
 export default function LoginForm({onSuccessSubmit}) {
   const [user, setUser] = useState({
-    username: '',
-    password: '',
+    username: 'aubin',
+    password: 'aubin77340',
   });
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -23,12 +23,11 @@ export default function LoginForm({onSuccessSubmit}) {
   const submitLogin = async () => {
     const auth = getAuth(firebase);
     try {
-      onSuccessSubmit()
-      // await signInWithEmailAndPassword(
-      //   auth,
-      //   `${user.username}@gmail.com`,
-      //   user.password,
-      // ).then(userCredential => onSuccessSubmit(userCredential));
+      await signInWithEmailAndPassword(
+        auth,
+        `${user.username}@gmail.com`,
+        user.password,
+      ).then(userCredential => onSuccessSubmit(userCredential));
     } catch (responseError) {
       setError(errorsLabels[responseError.code]);
     }

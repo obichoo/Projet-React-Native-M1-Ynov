@@ -1,27 +1,23 @@
-import React from 'react';
-import Title from '../../components/Title';
+import React, {useEffect} from 'react';
 import Button from '../../components/Button';
-import firebase from '../../config/firebase';
-import {getAuth, signOut} from 'firebase/auth';
+import {getCurrentUserNotes} from '../../services/notesService';
 
-export default function Home({title, navigation}) {
-  const handleDisconnect = async () => {
-    try {
-      const auth = getAuth(firebase);
-      await signOut(auth);
-      navigation.navigate('Login');
-    } catch (error) {
-      console.log(error);
-    }
+export default function Home({navigation}) {
+  const getNotes = async () => {
+    const notes = await getCurrentUserNotes();
+    console.log(notes);
   };
+
+  useEffect(() => {
+    getNotes();
+  }, []);
 
   return (
     <>
-      <Title>{title}</Title>
-      <Button title={'Déconnexion'} bgColor={'#F00'} onPress={handleDisconnect} />
       <Button
         title={'Créer une nouvelle note'}
         bgColor={'#2ecc71'}
+        width={200}
         onPress={() => navigation.navigate('CreateNote')}
       />
     </>

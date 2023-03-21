@@ -27,7 +27,6 @@ export default function RegisterForm({onSuccessSubmit}) {
         user.password,
       ).then(userCredential => onSuccessSubmit(userCredential));
     } catch (responseError) {
-      console.log(responseError.code);
       setError(errorsLabels[responseError.code]);
     }
   };

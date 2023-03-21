@@ -5,8 +5,8 @@ import {ThemeProvider} from 'styled-components';
 import theme from './src/config/theme';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import styled from 'styled-components';
 import CreateNote from './src/screens/CreateNote';
+import ScreenContainer from './src/components/ScreenContainer';
 
 export default function App() {
   return (
@@ -15,23 +15,23 @@ export default function App() {
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen options={globalScreenOptions} name="Home">
             {props => (
-              <Container>
-                <Home {...props} title={'Mes notes'} />
-              </Container>
+              <ScreenContainer title={'Mes notes'} {...props}>
+                <Home {...props} />
+              </ScreenContainer>
             )}
           </Stack.Screen>
           <Stack.Screen options={globalScreenOptions} name="Login">
             {props => (
-              <Container>
+              <ScreenContainer {...props}>
                 <Login {...props} />
-              </Container>
+              </ScreenContainer>
             )}
           </Stack.Screen>
           <Stack.Screen options={globalScreenOptions} name="CreateNote">
             {props => (
-              <Container>
+              <ScreenContainer title={'Créer une note'} {...props}>
                 <CreateNote {...props} />
-              </Container>
+              </ScreenContainer>
             )}
           </Stack.Screen>
         </Stack.Navigator>
@@ -44,7 +44,3 @@ const Stack = createNativeStackNavigator();
 const globalScreenOptions = {
   headerShown: false,
 };
-
-const Container = styled.SafeAreaView`
-  padding: 20px;
-`;
