@@ -9,8 +9,8 @@ import Toast from 'react-native-toast-message';
 
 const RegisterForm = ({onSuccessSubmit}) => {
   const [user, setUser] = useState({
-    username: 'aubin',
-    password: 'aubin77340',
+    username: '',
+    password: '',
   });
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
