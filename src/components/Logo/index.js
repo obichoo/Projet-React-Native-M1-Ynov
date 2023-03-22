@@ -1,14 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export default function Logo({size = 30, centered = false}) {
+const Logo = ({size = 30, centered = false}) => {
   return (
     <StyledLogo centered={centered}>
       <StyledImage size={size} source={require('./.././../assets/logo.png')} />
       <StyledText>MyNotes</StyledText>
     </StyledLogo>
   );
-}
+};
 
 const StyledLogo = styled.View`
   margin: ${props => (props.centered ? 'auto' : '0')};
@@ -27,3 +27,5 @@ const StyledText = styled.Text`
   color: black;
   margin-left: 10px;
 `;
+
+export default Logo;

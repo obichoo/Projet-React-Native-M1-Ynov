@@ -1,13 +1,15 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 
-export default function Input({
+const Input = ({
   type = 'text',
   name = 'Champs',
   multiline = false,
   width = '150px',
   onChange = () => {},
-}) {
+  value = '',
+  maxLength = 45,
+}) => {
   const handleChange = (event = {}) => onChange(event);
   const [height, setHeight] = useState(30);
 
@@ -16,17 +18,19 @@ export default function Input({
       <StyledText>{name}</StyledText>
       <StyledInput
         name={name}
+        value={value}
         multiline={multiline}
         onChangeText={e => handleChange(e)}
         onContentSizeChange={event =>
           setHeight(event.nativeEvent.contentSize.height)
         }
+        maxLength={multiline ? 9999999 : maxLength}
         height={height}
         secureTextEntry={type === 'password'}
       />
     </StyledView>
   );
-}
+};
 
 const StyledView = styled.View`
   width: ${props => props.width};
@@ -44,3 +48,5 @@ const StyledText = styled.Text`
   width: 100%;
   color: black;
 `;
+
+export default Input;

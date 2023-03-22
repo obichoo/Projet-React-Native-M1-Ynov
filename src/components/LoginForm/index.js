@@ -4,10 +4,9 @@ import Input from '../Input';
 import Button from '../Button';
 import Spacing from '../Spacing';
 import ErrorText from '../ErrorText';
-import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
-import {firebase} from '../../config/firebase';
+import auth from '@react-native-firebase/auth';
 
-export default function LoginForm({onSuccessSubmit}) {
+const LoginForm = ({onSuccessSubmit}) => {
   const [user, setUser] = useState({
     username: 'aubin',
     password: 'aubin77340',
@@ -21,16 +20,14 @@ export default function LoginForm({onSuccessSubmit}) {
   };
 
   const submitLogin = async () => {
-    const auth = getAuth(firebase);
-    try {
-      await signInWithEmailAndPassword(
-        auth,
-        `${user.username}@gmail.com`,
-        user.password,
-      ).then(userCredential => onSuccessSubmit(userCredential));
-    } catch (responseError) {
-      setError(errorsLabels[responseError.code]);
-    }
+    auth()
+      .signInWithEmailAndPassword(`${user.username}@gmail.com`, user.password)
+      .then(userCredential => {
+        onSuccessSubmit(userCredential);
+      })
+      .catch(error => {
+        setError(errorsLabels[error.code]);
+      });
   };
 
   return (
@@ -50,11 +47,12 @@ export default function LoginForm({onSuccessSubmit}) {
         value={user.password}
         onChange={e => setUser({...user, password: e})}
       />
+      <Spacing size={4} />
       {submitted && user.password.length < 8 && (
         <ErrorText width={150}>Mot de passe trop court</ErrorText>
       )}
       {error !== '' && <ErrorText width={150}>{error}</ErrorText>}
-      <Spacing />
+      <Spacing size={8} />
       <Button
         width={150}
         onPress={() => {
@@ -68,6 +66,8 @@ export default function LoginForm({onSuccessSubmit}) {
       />
     </StyledInputForm>
   );
-}
+};
 
 const StyledInputForm = styled.View``;
+
+export default LoginForm;

@@ -4,12 +4,12 @@ import Input from '../Input';
 import Button from '../Button';
 import Spacing from '../Spacing';
 import ErrorText from '../ErrorText';
-import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
-import firebase from '../../config/firebase';
-export default function RegisterForm({onSuccessSubmit}) {
+import auth from '@react-native-firebase/auth';
+
+const RegisterForm = ({onSuccessSubmit}) => {
   const [user, setUser] = useState({
-    username: '',
-    password: '',
+    username: 'aubin',
+    password: 'aubin77340',
   });
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -19,16 +19,15 @@ export default function RegisterForm({onSuccessSubmit}) {
   };
 
   const submitRegistration = async () => {
-    try {
-      const auth = getAuth(firebase);
-      await createUserWithEmailAndPassword(
-        auth,
+    auth()
+      .createUserWithEmailAndPassword(
         `${user.username}@gmail.com`,
         user.password,
-      ).then(userCredential => onSuccessSubmit(userCredential));
-    } catch (responseError) {
-      setError(errorsLabels[responseError.code]);
-    }
+      )
+      .then(userCredential => onSuccessSubmit(userCredential))
+      .catch(error => {
+        setError(errorsLabels[error.code]);
+      });
   };
 
   return (
@@ -48,11 +47,12 @@ export default function RegisterForm({onSuccessSubmit}) {
         value={user.password}
         onChange={e => setUser({...user, password: e})}
       />
+      <Spacing size={4} />
       {submitted && user.password.length < 8 && (
         <ErrorText width={150}>Mot de passe trop court</ErrorText>
       )}
       {error ? <ErrorText width={150}>{error}</ErrorText> : null}
-      <Spacing />
+      <Spacing size={8} />
       <Button
         width={150}
         onPress={() => {
@@ -66,6 +66,8 @@ export default function RegisterForm({onSuccessSubmit}) {
       />
     </StyledInputForm>
   );
-}
+};
 
 const StyledInputForm = styled.View``;
+
+export default RegisterForm;

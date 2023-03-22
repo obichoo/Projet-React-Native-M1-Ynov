@@ -1,12 +1,20 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export default function ErrorText({children, width}) {
-  return <StyledText width={width}>{children}</StyledText>;
-}
+const ErrorText = ({children, width = '100%', textAlign = 'left'}) => {
+  return (
+    <StyledText textAlign={textAlign} width={width}>
+      {children}
+    </StyledText>
+  );
+};
 
 const StyledText = styled.Text`
   color: red;
-  width: ${props => `${props.width}px` || '100%'};
+  text-align: ${props => props.textAlign};
+  width: ${props =>
+    `${typeof props.width === 'number' ? `${props.width}px` : props.width}`};
   font-size: 12px;
 `;
+
+export default ErrorText;

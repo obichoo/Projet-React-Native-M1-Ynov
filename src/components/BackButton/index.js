@@ -2,7 +2,7 @@ import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 import styled from 'styled-components';
 
-export default function BackButton({children, onPress, width}) {
+const BackButton = ({children, onPress, width}) => {
   const navigation = useNavigation();
 
   return (
@@ -12,7 +12,7 @@ export default function BackButton({children, onPress, width}) {
       <StyledBackButtonText>← {children}</StyledBackButtonText>
     </StyledBackButton>
   );
-}
+};
 
 const StyledBackButton = styled.TouchableOpacity`
   width: 100%;
@@ -30,3 +30,5 @@ const StyledBackButtonText = styled.Text`
   font-size: 12px;
   font-weight: 500;
 `;
+
+export default BackButton;

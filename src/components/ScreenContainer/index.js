@@ -1,19 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getAuth, signOut} from 'firebase/auth';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import styled from 'styled-components';
-import firebase from '../../config/firebase';
 import {getCurrentUser} from '../../services/notesService';
 import Button from '../Button';
 import Title from '../Title';
+import auth from '@react-native-firebase/auth';
 
-export default function ScreenContainer({route, navigation, children, title}) {
+const ScreenContainer = ({route, navigation, children, title}) => {
+  const [pageReady, setPageReady] = useState(false);
   const handleDisconnect = async () => {
     try {
-      const auth = getAuth(firebase);
       AsyncStorage.removeItem('token').then(async () => {
-        await signOut(auth);
+        if (getCurrentUser()) auth().signOut();
         navigation.navigate('Login');
       });
     } catch (error) {
@@ -21,12 +20,33 @@ export default function ScreenContainer({route, navigation, children, title}) {
     }
   };
 
-  AsyncStorage.getItem('token').then(storedToken => {
-    if (!storedToken || !getCurrentUser()) {
-      navigation.navigate('Login');
-    }
-  });
+  useEffect(() => {
+    AsyncStorage.getItem('token').then(storedToken => {
+      if ((!storedToken || !getCurrentUser()) && route.name !== 'Login') {
+        handleDisconnect();
+      } else {
+        setPageReady(true);
+      }
+    });
+  }, []);
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      AsyncStorage.getItem('token').then(storedToken => {
+        if ((!storedToken || !getCurrentUser()) && route.name !== 'Login') {
+          handleDisconnect();
+        } else {
+          setPageReady(true);
+        }
+      });
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  if (pageReady === false) {
+    return <View />;
+  }
   return (
     <Container>
       <Header>
@@ -44,7 +64,7 @@ export default function ScreenContainer({route, navigation, children, title}) {
       {children}
     </Container>
   );
-}
+};
 
 const Container = styled.SafeAreaView`
   padding: 20px;
@@ -62,3 +82,5 @@ const Header = styled.View`
 const AlignRight = styled.View`
   align-self: flex-end;
 `;
+
+export default ScreenContainer;

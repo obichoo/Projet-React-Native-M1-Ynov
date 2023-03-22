@@ -7,8 +7,9 @@ import Spacing from '../../components/Spacing';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from '../../components/Button';
 import RegisterForm from '../../components/RegisterForm';
+import messaging from '@react-native-firebase/messaging';
 
-export default function Login({navigation}) {
+const Login = ({navigation}) => {
   const [currentForm, setCurrentForm] = useState('login');
   const handleLogin = async userCredential => {
     const idToken = await userCredential?.user?.getIdToken();
@@ -18,7 +19,18 @@ export default function Login({navigation}) {
       AsyncStorage.setItem('token', idToken);
       AsyncStorage.getItem('token').then(storedToken => {
         if (storedToken) {
-          navigation.navigate('Home');
+          messaging()
+            .getToken()
+            .then(fcmToken => {
+              AsyncStorage.setItem('fcmToken', fcmToken).then(() => {
+                navigation.navigate('Home');
+              });
+            })
+            .catch(error => {
+              console.error(
+                `Erreur lors de la récupération du token FCM : ${error}`,
+              );
+            });
         }
       });
     }
@@ -29,7 +41,18 @@ export default function Login({navigation}) {
     AsyncStorage.setItem('token', idToken);
     AsyncStorage.getItem('token').then(storedToken => {
       if (storedToken) {
-        navigation.navigate('Home');
+        messaging()
+          .getToken()
+          .then(fcmToken => {
+            AsyncStorage.setItem('fcmToken', fcmToken).then(() => {
+              navigation.navigate('Home');
+            });
+          })
+          .catch(error => {
+            console.error(
+              `Erreur lors de la récupération du token FCM : ${error}`,
+            );
+          });
       }
     });
   };
@@ -70,8 +93,10 @@ export default function Login({navigation}) {
       />
     </CenteredView>
   );
-}
+};
 
 const CenteredView = styled.View`
   margin: auto;
 `;
+
+export default Login;

@@ -6,9 +6,10 @@ import theme from './src/config/theme';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import CreateNote from './src/screens/CreateNote';
+import EditNote from './src/screens/EditNote';
 import ScreenContainer from './src/components/ScreenContainer';
 
-export default function App() {
+const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <NavigationContainer>
@@ -34,13 +35,22 @@ export default function App() {
               </ScreenContainer>
             )}
           </Stack.Screen>
+          <Stack.Screen options={globalScreenOptions} name="EditNote">
+            {props => (
+              <ScreenContainer title={'Modifier une note'} {...props}>
+                <EditNote {...props} />
+              </ScreenContainer>
+            )}
+          </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>
   );
-}
+};
 
 const Stack = createNativeStackNavigator();
 const globalScreenOptions = {
   headerShown: false,
 };
+
+export default App;

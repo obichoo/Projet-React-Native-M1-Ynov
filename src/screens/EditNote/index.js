@@ -1,0 +1,113 @@
+import React, {useEffect, useState} from 'react';
+import Button from '../../components/Button';
+import {editNote, deleteNote} from '../../services/notesService';
+import Input from '../../components/Input';
+import Spacing from '../../components/Spacing';
+import BackButton from '../../components/BackButton';
+import ErrorText from '../../components/ErrorText';
+import CheckboxInput from '../../components/Checkbox';
+import styled from 'styled-components';
+import {Share} from 'react-native';
+
+const EditNote = ({navigation, route}) => {
+  const noteTitle = route.params.note.title;
+  const noteContent = route.params.note.content;
+  const noteId = route.params.note.id;
+  const noteIsPinned = route.params.note.isPinned || false;
+  const notePassword = route.params.note.password || '';
+  const noteRemind = route.params.note.remind || false;
+  const [title, setTitle] = useState(noteTitle);
+  const [content, setContent] = useState(noteContent);
+  const [isPinned, setIsPinned] = useState(noteIsPinned);
+  const [password, setPassword] = useState(notePassword);
+  const [remind, setRemind] = useState(noteRemind);
+  const [error, setError] = useState('');
+
+  const handleEditNote = async () => {
+    if (!title) {
+      setError('Le titre est obligatoire');
+      return;
+    }
+
+    if (!content) {
+      setError('Le contenu est obligatoire');
+      return;
+    }
+
+    await editNote(noteId, title, content, isPinned, password, remind);
+    navigation.navigate('Home');
+  };
+
+  const handleDeleteNote = async () => {
+    await deleteNote(noteId);
+    navigation.navigate('Home');
+  };
+
+  return (
+    <>
+      <BackButton>Revenir à la liste des notes</BackButton>
+      <Spacing size={16} />
+      <Input width="100%" name="Titre" value={title} onChange={setTitle} />
+      <Spacing size={8} />
+      <Input
+        width="100%"
+        name="Contenu"
+        value={content}
+        onChange={setContent}
+        multiline={true}
+      />
+      <Spacing size={8} />
+      <Input
+        width="100%"
+        type="password"
+        name="Protéger avec un mot de passe"
+        value={password}
+        onChange={setPassword}
+      />
+      <Spacing size={8} />
+      <CheckboxInput
+        label="Epingler la note"
+        checked={isPinned}
+        onChange={() => setIsPinned(!isPinned)}
+      />
+      <Spacing size={8} />
+      <CheckboxInput
+        label="Me rappeller cette note à la fermeture de l'application"
+        checked={remind}
+        onChange={() => setRemind(!remind)}
+      />
+      <Spacing size={4} />
+      {error !== '' && <ErrorText width={150}>{error}</ErrorText>}
+      <Spacing size={8} />
+      <Button title="Modifier la note" width={130} onPress={handleEditNote} />
+      <NoteButtons>
+        <Button
+          title="Partager la note"
+          width={130}
+          bgColor={'#5af'}
+          onPress={() =>
+            Share.share({
+              message: `Note: ${title}\nContenu: ${content}`,
+            })
+          }
+        />
+
+        <Button
+          title="Supprimer la note"
+          width={130}
+          onPress={handleDeleteNote}
+          bgColor={'red'}
+        />
+      </NoteButtons>
+    </>
+  );
+};
+
+const NoteButtons = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 50px;
+`;
+
+export default EditNote;
