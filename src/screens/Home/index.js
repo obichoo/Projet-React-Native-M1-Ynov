@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import PasswordModal from '../../components/PasswordModal';
+import Spacing from '../../components/Spacing';
 import {
   getCurrentUserNotes,
   fetchNotesByQuery,
@@ -15,23 +16,31 @@ const Home = ({navigation}) => {
   const [noteToEdit, setNoteToEdit] = useState(null);
 
   useEffect(() => {
-    getCurrentUserNotes().then(userNotes => {
-      setNotes(userNotes);
-    });
+    try {
+      getCurrentUserNotes().then(userNotes => {
+        setNotes(userNotes);
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }, []);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-      const userNotes = await getCurrentUserNotes();
-      setNotes(userNotes);
+      try {
+        const userNotes = await getCurrentUserNotes();
+        setNotes(userNotes);
+      } catch (error) {
+        console.error(error);
+      }
     });
 
     return unsubscribe;
   }, [navigation]);
 
   const handleFetchNotes = async () => {
-    const notes = await fetchNotesByQuery(query);
-    setNotes(notes);
+    const searchedNotes = await fetchNotesByQuery(query);
+    setNotes(searchedNotes);
   };
 
   const goToNote = note => () => {
@@ -52,8 +61,13 @@ const Home = ({navigation}) => {
     });
   };
 
+  const goToReviews = () => {
+    navigation.navigate('Reviews');
+  };
+
   useEffect(() => {
     handleFetchNotes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   return (
@@ -92,7 +106,16 @@ const Home = ({navigation}) => {
             />
           </Note>
         ))}
+        <Spacing size={30} />
       </NotesList>
+
+      <BottomButton>
+        <Button
+          width={120}
+          onPress={() => goToReviews()}
+          title={'Donner un avis'}
+        />
+      </BottomButton>
 
       {needPassword && (
         <PasswordModal onClose={() => closePasswordModal()} note={noteToEdit} />
@@ -140,5 +163,11 @@ const PhoneIcon = styled.Text`
 `;
 
 const SearchBar = styled.View``;
+
+const BottomButton = styled.View`
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+`;
 
 export default Home;

@@ -9,7 +9,7 @@ export const createNote = async (
   password = null,
   remind,
 ) => {
-  const userId = auth().currentUser.uid;
+  const userId = auth().currentUser?.uid;
   await AsyncStorage.getItem('fcmToken').then(async fcmToken => {
     await firestore().collection('notes').add({
       title,
@@ -56,7 +56,7 @@ export const deleteNote = async id => {
 };
 
 export const fetchNotesByQuery = async query => {
-  const userId = auth().currentUser.uid;
+  const userId = auth().currentUser?.uid;
   const userNotes = await firestore()
     .collection('notes')
     .where('title', '>=', query)
@@ -86,7 +86,7 @@ export const fetchNotesByQuery = async query => {
 };
 
 export const getCurrentUserNotes = async () => {
-  const userId = auth().currentUser.uid;
+  const userId = auth().currentUser?.uid;
   const userNotes = await firestore()
     .collection('notes')
     .where('userId', '==', userId)
@@ -116,4 +116,34 @@ export const getCurrentUserNotes = async () => {
 
 export const getCurrentUser = () => {
   return auth().currentUser;
+};
+
+export const createReview = async (comment, rating) => {
+  const userId = auth().currentUser?.uid;
+
+  await firestore().collection('reviews').add({
+    comment,
+    rating,
+    userId,
+    date: Date.now(),
+  });
+
+  return true;
+};
+
+export const getReviews = async () => {
+  const reviews = await firestore()
+    .collection('reviews')
+    .get()
+    .then(querySnapshot => {
+      const rawReviews = [];
+      querySnapshot.forEach(doc => {
+        const review = doc.data();
+        review.id = doc.id;
+        rawReviews.push(review);
+      });
+      return rawReviews;
+    });
+
+  return reviews.sort((a, b) => b.date - a.date);
 };

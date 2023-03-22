@@ -6,14 +6,30 @@ import {getCurrentUser} from '../../services/notesService';
 import Button from '../Button';
 import Title from '../Title';
 import auth from '@react-native-firebase/auth';
+import Toast from 'react-native-toast-message';
 
 const ScreenContainer = ({route, navigation, children, title}) => {
   const [pageReady, setPageReady] = useState(false);
+  const [disconnecting, setDisconnecting] = useState(false);
   const handleDisconnect = async () => {
     try {
+      setDisconnecting(true);
       AsyncStorage.removeItem('token').then(async () => {
-        if (getCurrentUser()) auth().signOut();
-        navigation.navigate('Login');
+        if (getCurrentUser()) {
+          try {
+            await auth().signOut();
+            Toast.show({
+              type: 'success',
+              text1: 'Déconnexion réussie',
+              text2: 'À bientôt !',
+              position: 'bottom',
+            });
+            setDisconnecting(false);
+            navigation.navigate('Login');
+          } catch (error) {
+            console.error(error);
+          }
+        }
       });
     } catch (error) {
       console.error(error);
@@ -28,6 +44,7 @@ const ScreenContainer = ({route, navigation, children, title}) => {
         setPageReady(true);
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -42,6 +59,7 @@ const ScreenContainer = ({route, navigation, children, title}) => {
     });
 
     return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation]);
 
   if (pageReady === false) {
@@ -55,6 +73,7 @@ const ScreenContainer = ({route, navigation, children, title}) => {
           <AlignRight>
             <Button
               title={'Déconnexion'}
+              loading={disconnecting}
               bgColor={'#F00'}
               onPress={handleDisconnect}
             />

@@ -13,6 +13,7 @@ const PasswordModal = ({error = false, note, onClose}) => {
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState(false);
   const [passwordTries, setPasswordTries] = useState(0);
+  const [deletingNote, setDeletingNote] = useState(false);
   const navigation = useNavigation();
 
   const checkPassword = () => {
@@ -28,10 +29,17 @@ const PasswordModal = ({error = false, note, onClose}) => {
   };
 
   const handleDeleteNote = async () => {
+    setDeletingNote(true);
     const noteId = note.id;
-    await deleteNote(noteId);
-    onClose();
-    navigation.navigate('Home');
+    try {
+      await deleteNote(noteId);
+      onClose();
+      setDeletingNote(false);
+      navigation.navigate('Home');
+    } catch (err) {
+      console.error(err);
+      setDeletingNote(false);
+    }
   };
 
   return (
@@ -72,6 +80,7 @@ const PasswordModal = ({error = false, note, onClose}) => {
                 width={'100%'}
                 title="Supprimer"
                 bgColor="red"
+                loading={deletingNote}
                 onPress={() => handleDeleteNote()}
               />
             </>

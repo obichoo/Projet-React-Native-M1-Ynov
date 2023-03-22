@@ -9,13 +9,17 @@ const Input = ({
   onChange = () => {},
   value = '',
   maxLength = 45,
+  mandatory = false,
 }) => {
   const handleChange = (event = {}) => onChange(event);
   const [height, setHeight] = useState(30);
 
   return (
     <StyledView width={width}>
-      <StyledText>{name}</StyledText>
+      <StyledText>
+        {name}
+        {mandatory && <Mandatory>*</Mandatory>}
+      </StyledText>
       <StyledInput
         name={name}
         value={value}
@@ -47,6 +51,9 @@ const StyledInput = styled.TextInput`
 const StyledText = styled.Text`
   width: 100%;
   color: black;
+`;
+const Mandatory = styled.Text`
+  color: red;
 `;
 
 export default Input;

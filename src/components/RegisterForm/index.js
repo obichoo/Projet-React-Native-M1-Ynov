@@ -5,6 +5,7 @@ import Button from '../Button';
 import Spacing from '../Spacing';
 import ErrorText from '../ErrorText';
 import auth from '@react-native-firebase/auth';
+import Toast from 'react-native-toast-message';
 
 const RegisterForm = ({onSuccessSubmit}) => {
   const [user, setUser] = useState({
@@ -13,20 +14,33 @@ const RegisterForm = ({onSuccessSubmit}) => {
   });
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [registring, setRegistring] = useState(false);
 
   const errorsLabels = {
     'auth/email-already-in-use': 'Email déjà utilisé',
   };
 
   const submitRegistration = async () => {
+    setRegistring(true);
+
     auth()
       .createUserWithEmailAndPassword(
         `${user.username}@gmail.com`,
         user.password,
       )
-      .then(userCredential => onSuccessSubmit(userCredential))
+      .then(userCredential => {
+        setRegistring(false);
+        onSuccessSubmit(userCredential);
+      })
       .catch(error => {
         setError(errorsLabels[error.code]);
+        setRegistring(false);
+        Toast.show({
+          type: 'error',
+          text1: 'Erreur',
+          text2: errorsLabels[error.code],
+          position: 'bottom',
+        });
       });
   };
 
@@ -54,6 +68,7 @@ const RegisterForm = ({onSuccessSubmit}) => {
       {error ? <ErrorText width={150}>{error}</ErrorText> : null}
       <Spacing size={8} />
       <Button
+        loading={registring}
         width={150}
         onPress={() => {
           setSubmitted(true);

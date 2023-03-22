@@ -5,12 +5,14 @@ import Button from '../Button';
 import Spacing from '../Spacing';
 import ErrorText from '../ErrorText';
 import auth from '@react-native-firebase/auth';
+import Toast from 'react-native-toast-message';
 
 const LoginForm = ({onSuccessSubmit}) => {
   const [user, setUser] = useState({
     username: 'aubin',
     password: 'aubin77340',
   });
+  const [loging, setLoging] = useState(false);
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
@@ -20,13 +22,22 @@ const LoginForm = ({onSuccessSubmit}) => {
   };
 
   const submitLogin = async () => {
+    setLoging(true);
     auth()
       .signInWithEmailAndPassword(`${user.username}@gmail.com`, user.password)
       .then(userCredential => {
+        setLoging(false);
         onSuccessSubmit(userCredential);
       })
       .catch(error => {
         setError(errorsLabels[error.code]);
+        setLoging(false);
+        Toast.show({
+          type: 'error',
+          text1: 'Erreur',
+          text2: errorsLabels[error.code],
+          position: 'bottom',
+        });
       });
   };
 
@@ -61,6 +72,7 @@ const LoginForm = ({onSuccessSubmit}) => {
             submitLogin();
           }
         }}
+        loading={loging}
         title={'Se connecter'}
         bgColor={'black'}
       />

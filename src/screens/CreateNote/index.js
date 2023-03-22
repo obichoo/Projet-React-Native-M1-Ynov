@@ -6,6 +6,7 @@ import Spacing from '../../components/Spacing';
 import BackButton from '../../components/BackButton';
 import ErrorText from '../../components/ErrorText';
 import CheckboxInput from '../../components/Checkbox';
+import Toast from 'react-native-toast-message';
 
 const CreateNote = ({navigation}) => {
   const [title, setTitle] = useState('');
@@ -14,6 +15,7 @@ const CreateNote = ({navigation}) => {
   const [password, setPassword] = useState(null);
   const [remind, setRemind] = useState(false);
   const [error, setError] = useState('');
+  const [creatingNote, setCreatingNote] = useState(false);
 
   const handleSaveNote = async () => {
     if (!title) {
@@ -26,20 +28,46 @@ const CreateNote = ({navigation}) => {
       return;
     }
 
-    await createNote(title, content, isPinned, password, remind);
-    navigation.navigate('Home');
-    return true;
+    setCreatingNote(true);
+
+    try {
+      await createNote(title, content, isPinned, password, remind);
+      Toast.show({
+        type: 'success',
+        text1: 'Note créée',
+        text2: `La note "${title}" a bien été créée`,
+        position: 'bottom',
+      });
+      setCreatingNote(false);
+      navigation.navigate('Home');
+    } catch (err) {
+      console.error(err);
+      setCreatingNote(false);
+      Toast.show({
+        type: 'error',
+        text1: 'Erreur lors de la création de la note',
+        text2: `Une erreur est survenue lors de la création de la note "${title}"`,
+        position: 'bottom',
+      });
+    }
   };
 
   return (
     <>
       <BackButton>Revenir à la liste des notes</BackButton>
       <Spacing size={16} />
-      <Input width="100%" name="Titre" value={title} onChange={setTitle} />
+      <Input
+        width="100%"
+        mandatory={true}
+        name="Titre"
+        value={title}
+        onChange={setTitle}
+      />
       <Spacing size={8} />
       <Input
         width="100%"
         name="Contenu"
+        mandatory={true}
         value={content}
         onChange={setContent}
         multiline={true}
@@ -67,7 +95,11 @@ const CreateNote = ({navigation}) => {
       <Spacing size={4} />
       {error !== '' && <ErrorText width={150}>{error}</ErrorText>}
       <Spacing size={8} />
-      <Button title="Créer la note" onPress={handleSaveNote} />
+      <Button
+        title="Créer la note"
+        loading={creatingNote}
+        onPress={handleSaveNote}
+      />
     </>
   );
 };

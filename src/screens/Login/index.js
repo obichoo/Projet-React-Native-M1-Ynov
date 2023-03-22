@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from '../../components/Button';
 import RegisterForm from '../../components/RegisterForm';
 import messaging from '@react-native-firebase/messaging';
+import Toast from 'react-native-toast-message';
 
 const Login = ({navigation}) => {
   const [currentForm, setCurrentForm] = useState('login');
@@ -23,6 +24,15 @@ const Login = ({navigation}) => {
             .getToken()
             .then(fcmToken => {
               AsyncStorage.setItem('fcmToken', fcmToken).then(() => {
+                Toast.show({
+                  type: 'success',
+                  text1: 'Connexion réussie',
+                  text2: `Bonjour ${userCredential.user.email.replace(
+                    '@gmail.com',
+                    '',
+                  )} !`,
+                  position: 'bottom',
+                });
                 navigation.navigate('Home');
               });
             })

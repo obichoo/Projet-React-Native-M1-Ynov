@@ -8,6 +8,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import CreateNote from './src/screens/CreateNote';
 import EditNote from './src/screens/EditNote';
 import ScreenContainer from './src/components/ScreenContainer';
+import Toast from 'react-native-toast-message';
+import Reviews from './src/screens/Reviews';
 
 const App = () => {
   return (
@@ -42,8 +44,17 @@ const App = () => {
               </ScreenContainer>
             )}
           </Stack.Screen>
+          <Stack.Screen options={globalScreenOptions} name="Reviews">
+            {props => (
+              <ScreenContainer title={"Avis sur l'application"} {...props}>
+                <Reviews {...props} />
+              </ScreenContainer>
+            )}
+          </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
+
+      <Toast />
     </ThemeProvider>
   );
 };

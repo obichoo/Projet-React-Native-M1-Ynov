@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import Button from '../../components/Button';
 import {editNote, deleteNote} from '../../services/notesService';
 import Input from '../../components/Input';
@@ -8,6 +8,7 @@ import ErrorText from '../../components/ErrorText';
 import CheckboxInput from '../../components/Checkbox';
 import styled from 'styled-components';
 import {Share} from 'react-native';
+import Toast from 'react-native-toast-message';
 
 const EditNote = ({navigation, route}) => {
   const noteTitle = route.params.note.title;
@@ -22,6 +23,9 @@ const EditNote = ({navigation, route}) => {
   const [password, setPassword] = useState(notePassword);
   const [remind, setRemind] = useState(noteRemind);
   const [error, setError] = useState('');
+  const [editingNote, setEditingNote] = useState(false);
+  const [deletingNote, setDeletingNote] = useState(false);
+  const [sharingNote, setSharingNote] = useState(false);
 
   const handleEditNote = async () => {
     if (!title) {
@@ -34,23 +38,86 @@ const EditNote = ({navigation, route}) => {
       return;
     }
 
-    await editNote(noteId, title, content, isPinned, password, remind);
-    navigation.navigate('Home');
+    setEditingNote(true);
+
+    try {
+      await editNote(noteId, title, content, isPinned, password, remind);
+      Toast.show({
+        type: 'success',
+        text1: 'Note modifiée',
+        text2: `La note "${title}" a bien été modifiée`,
+        position: 'bottom',
+      });
+      setEditingNote(false);
+      navigation.navigate('Home');
+    } catch (err) {
+      console.error(err);
+      setEditingNote(false);
+      Toast.show({
+        type: 'error',
+        text1: 'Erreur lors de la modification de la note',
+        text2: `Une erreur est survenue lors de la modification de la note "${title}"`,
+        position: 'bottom',
+      });
+      setEditingNote(false);
+    }
   };
 
   const handleDeleteNote = async () => {
-    await deleteNote(noteId);
-    navigation.navigate('Home');
+    setDeletingNote(true);
+    try {
+      await deleteNote(noteId);
+      Toast.show({
+        type: 'success',
+        text1: 'Note supprimée',
+        text2: `La note "${title}" a bien été supprimée`,
+        position: 'bottom',
+      });
+      setDeletingNote(false);
+      navigation.navigate('Home');
+    } catch (err) {
+      console.error(err);
+      Toast.show({
+        type: 'error',
+        text1: 'Erreur',
+        text2: `La note "${title}" n'a pas pu être supprimée`,
+        position: 'bottom',
+      });
+      setDeletingNote(false);
+    }
+  };
+
+  const shareNote = async () => {
+    setSharingNote(true);
+    try {
+      await Share.share({
+        message: `Titre: ${title} \n Contenu: ${content}`,
+      }).finally(() => {
+        setTimeout(() => {
+          setSharingNote(false);
+        }, 1500);
+      });
+    } catch (err) {
+      console.log(err.message);
+      setSharingNote(false);
+    }
   };
 
   return (
     <>
       <BackButton>Revenir à la liste des notes</BackButton>
       <Spacing size={16} />
-      <Input width="100%" name="Titre" value={title} onChange={setTitle} />
+      <Input
+        width="100%"
+        name="Titre"
+        mandatory={true}
+        value={title}
+        onChange={setTitle}
+      />
       <Spacing size={8} />
       <Input
         width="100%"
+        mandatory={true}
         name="Contenu"
         value={content}
         onChange={setContent}
@@ -79,22 +146,25 @@ const EditNote = ({navigation, route}) => {
       <Spacing size={4} />
       {error !== '' && <ErrorText width={150}>{error}</ErrorText>}
       <Spacing size={8} />
-      <Button title="Modifier la note" width={130} onPress={handleEditNote} />
+      <Button
+        title="Modifier la note"
+        loading={editingNote}
+        width={130}
+        onPress={handleEditNote}
+      />
       <NoteButtons>
         <Button
           title="Partager la note"
+          loading={sharingNote}
           width={130}
           bgColor={'#5af'}
-          onPress={() =>
-            Share.share({
-              message: `Note: ${title}\nContenu: ${content}`,
-            })
-          }
+          onPress={() => shareNote()}
         />
 
         <Button
           title="Supprimer la note"
           width={130}
+          loading={deletingNote}
           onPress={handleDeleteNote}
           bgColor={'red'}
         />
