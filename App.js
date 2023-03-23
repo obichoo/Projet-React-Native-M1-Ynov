@@ -15,7 +15,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
+        <Stack.Navigator initialRouteName="Login">
           <Stack.Screen options={globalScreenOptions} name="Home">
             {props => (
               <ScreenContainer title={'Mes notes'} {...props}>

@@ -29,13 +29,13 @@ const LoginForm = ({onSuccessSubmit}) => {
         setLoging(false);
         onSuccessSubmit(userCredential);
       })
-      .catch(error => {
-        setError(errorsLabels[error.code]);
+      .catch(err => {
+        setError(errorsLabels[err.code]);
         setLoging(false);
         Toast.show({
           type: 'error',
           text1: 'Erreur',
-          text2: errorsLabels[error.code],
+          text2: errorsLabels[err.code],
           position: 'bottom',
         });
       });
